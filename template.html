@@ -1,0 +1,224 @@
+<html>
+<head>
+<title></title>
+
+<style>
+
+* {
+	font-family:serif;
+}
+
+body {
+	margin:0;
+	background:url("windows95.png");
+	background-size:cover;
+}
+
+#topbar {
+
+	/*background:linear-gradient(90deg,#0A246A,#A6CAF0);*/
+	height:64px;
+}
+
+#topbar h1 {
+	color:yellow;
+	text-shadow:black 4px 4px 0px;
+	font-size:40px;
+	margin-left:8px;
+	margin-top:2px;
+	text-align:center;
+}
+
+#fun {
+	
+	border:solid 2px #aaaaaa;
+	margin-left:8px;
+	box-shadow: black 4px 4px 0px;
+	float:left;
+}
+
+#taskbar {
+	position:fixed;
+	left:0;bottom:0;
+	width:100%;
+	height:28px;
+	background:url("tbBg.png")
+}
+
+#taskbar a {
+	position:absolute;
+	margin:4px 0 0 2px;
+}
+
+#marqueetext {
+	width:100%;
+	height:16px;
+	background:red;
+	margin-bottom:8px;
+	color:white;
+}
+
+#mainContent {
+	width:100%;
+	height:auto;
+}
+
+#gifs {
+	min-height:256px;
+	width:256px;
+	float:right;
+	background:linear-gradient(180deg,#DFDFDF,#BFBFBF);
+	border:solid 2px #aaaaaa;
+	margin-right:8px;
+	box-shadow: black 4px 4px 0px;
+}
+
+#middleThing {
+	position:absolute;
+	background:linear-gradient(180deg,#DFDFDF,#BFBFBF 512px);
+	height:512px;
+	left:50%;
+	transform:translateX(-50%);
+	box-shadow: black 4px 4px 0px;
+}
+
+#pics {
+	padding:8px;
+}
+
+#ihavethisjustsoicanhavepaddingwithoutmessingitallup {
+	padding:8px;
+}
+
+</style>
+</head>
+<body>
+
+<div id="topbar">
+	<h1>my house</h1>
+</div>
+<div id="marqueetext"><marquee scrollamount=8></marquee></div>
+
+<div id="mainContent">
+	<canvas id="fun"></canvas>
+	<div id="gifs">
+		<div id="pics">
+		<img src="iexplorer.gif" />
+		<img src="msn.gif" />
+		<img src="Windows.gif" />
+		<img src="windows (1).gif" />
+		<img src="fordlogo.gif" />
+		<img src="ani_download.gif" />
+		<img src="brasil.gif" />
+		<img src="smile.gif" />
+		<img src="aquarium.gif" />
+		</div>
+	</div>
+</div>
+
+<div id="middleThing">
+	<div id="ihavethisjustsoicanhavepaddingwithoutmessingitallup">
+	<a href="index.html"><img src="back.gif" /></a>
+	
+	<h1>hi!!!!!!!!!</h1>
+	welcome to my house!!!!! feel free to check out the stuff i have here!!!!!!!!!<br><br>
+	
+	<h2>here are some links to get started:</h2>
+	<h3><a href="aboutme.html"><img src="ante002.gif" width=26 height=32 /> about me</a></h3>
+	<h3><a href="mymidis.html"><img src="ANImidi.gif" width=32 height=32 /> midis</a></h3> 
+	<h3><a href="software.html"><img src="disketa.gif" width=28 height=32 /> software</a></h3>
+	<h3><a href="art.html"><img src="paint.gif" width=32 height=32 />art</a></h3>
+	<h3><a href="art.html"><img src="new003.gif" /> boot YOUR own WebCOMPUTER™</a></h3>
+
+
+	</div>
+</div>
+
+<div id="taskbar">
+	<a href="javascript:toggleStart()" id="startBtn"><img src="startUp.png" /></a>
+</div>
+
+<script>
+function animateTitle(){
+	document.title = "my HOUSE"
+	
+	setTimeout(()=>{
+		document.title = "MY house"
+	},870/2)
+	
+	setTimeout(()=>{
+		animateTitle()
+	},870)
+};animateTitle()
+
+
+//////////////////
+// FUN CANVAS 	//
+//////////////////
+funcanvas = document.getElementById("fun")
+functx = funcanvas.getContext("2d")
+funcanvas.height = 512
+funcanvas.width = 256
+
+timerbeforesquare = 0
+
+sqrx = 16
+sqry = 16
+sqrsx = 16
+sqrsy = 16
+
+function update(){
+
+	//////////////////////
+	//	funcanvas work	//
+	//////////////////////
+	functx.fillStyle = "#0000FF33"
+	functx.fillRect(0,0,funcanvas.width,funcanvas.height)
+	
+	if(timerbeforesquare>15){
+	
+		sqrx += sqrsx
+		sqry += sqrsy
+		
+		if(sqrx+64+16>funcanvas.width){
+			sqrsx = 0 - sqrsx
+		}
+		if(sqry+64+16>funcanvas.height){
+			sqrsy = 0 - sqrsy
+		}
+		if(sqrx-16<0){
+			sqrsx = 0 - sqrsx
+		}
+		if(sqry-16<0){
+			sqrsy = 0 - sqrsy
+		}
+		
+		
+		functx.fillStyle = "#FF0000"
+		functx.fillRect(sqrx,sqry,64,64)
+	} else {
+		timerbeforesquare += 1
+	}
+	
+}
+
+setInterval(update,1000/5)
+
+startOpen = 0
+startButton = document.getElementById("startBtn")
+function toggleStart(){
+	if(startOpen){
+		startOpen = 0
+		startBtn.children[0].src = "startUp.png"
+	} else {
+		startOpen = 1
+		startBtn.children[0].src = "startDown.png"
+	}
+}
+
+document.getElementById("marqueetext").children[0].innerHTML = "welcome to my site - you just won a free vacation to Brazil - press 1 to claim your prize! - download free movies in high definition - sony vegas pro 10.0 free download keygen - UWU OWO UWU OWO UWU OWO UWU OWO UWU OWO UWU OWO - get your FREE desktop assistant now! - sponsored by Netscape Navigator - Not really sponsored by Netscape Navigator - "+navigator.userAgent+" - the Constant flows of information........ - piss - \"The best website on the World Wide Web!\" -my cousin - Batteries Included! - <a href=\"javascript:window.alert('hehehe')\">CLICK ME CLICK ME!!</a>"
+document.getElementById("middleThing").style.width = window.innerWidth - funcanvas.width - 16 - 256 - 32
+
+</script>
+</body>
+</html>
