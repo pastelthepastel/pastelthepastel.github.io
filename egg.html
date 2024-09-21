@@ -1,0 +1,61 @@
+<!DOCTYPE html> <!-- there, hope you IRC furries are happy now -->
+<html>
+<head>
+<title></title>
+
+<style>
+
+#the-eggs {
+	
+}
+
+#the-eggs img {
+	width:300px;
+	border:white solid 2px;
+	border-radius:4px;
+	box-shadow:black 0 0 10px 4px;
+	margin:8px;
+}
+
+</style>
+</head>
+<body>
+
+<h1 style="font-size:32pt;font-family:verdana; " id="eggTitle">egg!</h1>
+
+<div id="the-eggs">
+<img src="eggs/eggHold.jpg">
+<img src="eggs/eggBook.jpg">
+<img src="eggs/eggFan.jpg">
+<img src="eggs/eggGame.jpg">
+<img src="eggs/eggDraw.jpg">
+<img src="eggs/eggCards.jpg">
+<img src="eggs/eggPhone.jpg">
+<img src="eggs/eggWatch.jpg">
+<img src="eggs/eggPc.jpg">
+<div>
+
+<script>
+// please for the sake of god dont judge my code if it's bad, at least i works (i think)
+
+titleThingy = 0
+setInterval(()=>{
+	
+	if(titleThingy==0){document.title = "egg"}
+	if(titleThingy==1){document.title = "Egg"}
+	if(titleThingy==2){document.title = "EGg"}
+	if(titleThingy==3){document.title = "EGG"}
+	if(titleThingy==4){document.title = "eGG"}
+	if(titleThingy==5){document.title = "egG"}
+	
+	document.getElementById("eggTitle").innerText=document.title+"!"
+	
+	if(titleThingy<5){
+		titleThingy+=1
+	}else{titleThingy=0}
+
+},400)
+
+</script>
+</body>
+</html>
