@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebCOMPUTER</title>
+
+<style>
+
+body {margin:0;background-color:black;overflow:hidden;}
+
+@font-face {
+	src:url("webpc/vga.ttf");
+	font-family:vga;
+}
+
+#textModeDisplay {
+	background:black;
+	font-family:vga;
+	width:100%;
+	color:gray;
+	transform-origin:top left;
+}
+
+</style>
+</head>
+<body>
+
+<div id="textModeDisplay"></div>
+
+<script>
+
+textModeDisplay = document.getElementById("textModeDisplay")
+
+textModeDisplay.style.width = window.innerWidth/2
+textModeDisplay.style.height = window.innerHeight/2
+
+textModeDisplay.style.transform = "scale(2)"
+
+
+
+setTimeout(()=>{
+	textModeDisplay.innerText = `bootloader.html v0.1[B]
+	(C)2024 PastelThePastel
+	`
+	
+},330)
+
+setTimeout(()=>{
+	textModeDisplay.innerText = `bootloader.html v0.1[B]
+	(C)2024 PastelThePastel
+	
+	scanning for devices.
+	`
+	
+},1130)
+
+setTimeout(()=>{
+	textModeDisplay.innerText = `bootloader.html v0.1[B]
+	(C)2024 PastelThePastel
+	
+	scanning for devices..
+	Queenston 2x256MB DDR400
+	`
+},1130+500)
+
+setTimeout(()=>{
+	textModeDisplay.innerText = `bootloader.html v0.1[B]
+	(C)2024 PastelThePastel
+	
+	scanning for devices...
+	Queenston 2x256MB DDR400
+	`
+},1130+1000)
+setTimeout(()=>{
+	textModeDisplay.innerText = `bootloader.html v0.1[B]
+	(C)2024 PastelThePastel
+	
+	scanning for devices....
+	Queenston 2x256MB DDR400
+	`
+},1130+1500)
+setTimeout(()=>{
+	textModeDisplay.innerText = `
+	`
+},1130+2000)
+
+setTimeout(()=>{textModeDisplay.innerText = `found 1 boot drive
+ToShiba Inu IDE7200 8GB Virtual Boot Drive
+`},4740)
+setTimeout(()=>{textModeDisplay.innerText = `found 1 boot drive
+ToShiba Inu IDE7200 8GB Virtual Boot Drive [WebPCOS Detected, booting...]
+`},5440)
+
+setTimeout(()=>{window.location.href = "webpc/bootscreen.html"+window.location.hash},5600)
+
+</script>
+</body>
+</html>
