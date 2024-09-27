@@ -1,0 +1,156 @@
+<html>
+<head>
+<title>sound mixer</title>
+
+<style>
+	body {margin:0;overflow:hidden;}
+
+	* {
+		font-family:monospace;
+		user-select:none;
+	}
+
+	#volslider {
+		width:100%;
+		accent-color:#0000FF;
+		background:gray;
+	}
+	
+	#volumebox {
+		position:absolute;
+		transform-origin:left;
+		transform:rotate(-45deg);
+		width:calc(100vh * 1.4);
+		left:-22px;
+		bottom:-18px;
+	}
+	
+	#volumeh1 {
+		transform-origin:left;
+		font-size:32pt;
+		text-align:center;
+		margin:0;
+	}
+	
+	#holdbtn {
+		position:absolute;
+		width:128px;
+		height:128px;
+		right:0;
+		margin-right:64px;
+		border:black solid 2px;
+		border-radius:16px;
+		box-shadow:black 0px 32px 0px;
+		text-align:center;
+		transform:translateY(-50%);
+		top:50%;
+	}
+	#holdbtn:active {
+		box-shadow:none;
+		top:calc(50% + 32px);
+	}
+	
+	#holdbtn h1 {
+		margin-top:42px;
+		font-size:28pt;
+		pointer-events:none;
+	}
+	
+</style>
+</head>
+<body>
+
+<div id="volumebox">
+<h1 id="volumeh1">Volume</h1>
+<br>
+<input type="range" id="volslider" max=500></input>
+</div>
+
+<div id="holdbtn"><h1>hold!</h1><h3 id="powerdisplay">12</h3></div>
+
+<script>
+volSlider = document.getElementById("volslider")
+volh1 = document.getElementById("volumeh1")
+volSlider.value = 0
+
+mousepos = {x:0,y:0}
+sliderpos = volSlider.getBoundingClientRect()
+
+document.addEventListener("mousemove",(e)=>{
+	mousepos = {x:e.pageX,y:e.pageY}
+})
+
+holdbtn = document.getElementById("holdbtn")
+powerdisplay = document.getElementById("powerdisplay")
+
+var holding = 0
+power = 0
+
+holdbtn.addEventListener("mousedown",()=>{
+	holding = 1
+	power = 0
+	
+	function tick(){
+	
+		if(power<500){
+			power+=8
+			powerdisplay.innerText = Math.floor(power/5)
+			volSlider.style.accentColor = "rgba("+Math.floor(power/500*255)+", 0, "+Math.floor(255-(power/500*255))+", 1)"
+		}
+	
+		if(holding){
+			setTimeout(tick,1000/30)
+		}
+	};tick()
+})
+
+
+
+reverse = 0
+maxaccel = 120
+
+holdbtn.addEventListener("mouseup",()=>{
+	accel = 40
+	holding = 0
+	setTimeout(()=>{volSlider.style.accentColor = ""},100)
+	
+	console.log(power)
+	i=0
+	
+	function tick(){
+	
+		slidervalue = parseInt(volSlider.value)
+		
+		if(reverse){
+			slidervalue -= accel
+		} else {
+			slidervalue += accel
+		}
+		volslider.value = slidervalue
+		
+		if(slidervalue>=500){
+			reverse = 1
+		}
+		
+		if(slidervalue<=0){
+			reverse = 0
+		}
+		
+		accel-=maxaccel/power
+		if(accel<0){accel=0}
+	
+		i+=1
+		if(i<power){
+			setTimeout(tick,60)
+		}
+		
+		document.getElementById("volumeh1").innerText = "Volume: "+Math.floor(parseInt(volSlider.value)/5)
+	};tick()
+
+	setTimeout(()=>{powerdisplay.innerText = 0},64)
+})
+
+volSlider.addEventListener("input",(e)=>{e.srcElement.value = "0"})
+</script>
+</body>
+</html>

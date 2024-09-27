@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebPCOS</title>
+
+<style>
+
+body {
+	margin:0;
+	background:url("loginscr.jpg");
+	background-size:100vw 100vh;
+}
+
+* {
+	cursor:url("cur.png"), default;
+	font-family:verdana;
+	font-weight:10;
+}
+
+#users {
+	margin-top:calc(100vh / 4);
+	width:100%;
+	height:192px;
+	display:flex;
+}
+
+.userPic {
+	width:192px;
+	transition:all 300ms cubic-bezier(0, 0, 0, 1);
+	height:192px;
+	margin-right:16px;
+	box-shadow:black 0 0 8px;
+	-webkit-box-reflect: below 0px linear-gradient(#00000000 80px, #000000a0);
+	border:#AAAAAA solid 1px;
+	border-radius:16px;
+}
+
+.spacer {
+	width:calc(50vw - 96px);
+	height:192px;
+}
+
+.userName {
+	color:white;
+	margin:0;
+	text-shadow:black 0 0 6px;
+	margin-left:8px;
+}
+
+#cpuid {
+	margin-top:8px;
+	margin-left:8px;
+	color:white;
+	text-shadow:black 0 0 4px;
+}
+
+#passwd {
+	position:absolute;
+	width:2px; /* 288px */
+	height:24px;
+	left:50%;
+	transform:translateX(-50%);
+	margin-top:32px;
+	background:linear-gradient(0deg,#F8F8F8,#E2E2E2);
+	border:none;
+	border-radius:8px;
+	z-index:1000;
+	transition:all 300ms cubic-bezier(0, 0, 0, 1);
+	box-shadow:#FFFFFF 0 -2px 0px,#545454 0 1px 0px, #00000099 0 0 8px;
+	display:flex;
+}
+
+#passwdBox {
+	background:transparent;
+	margin-left:4px;
+	border:none;
+	width:calc(100% - 36px);
+	border-radius:4px;
+	transition:background 200ms;
+}
+
+#loginBtn {
+	width:20px;
+	height:20px;
+	float:right;
+	margin-top:2px;
+	margin-right:2px;
+}
+
+#passwdBox:focus {
+	outline:none;
+}
+
+</style>
+</head>
+<body>
+
+<h3 id="cpuid">Outtel Quark 1500 CPU @ 1.20Ghz ; 512MB DDR400<br>WebPCOS v0.1_b &copy;2024 PastelThePastel [DEFAULT PASSWORD IS "admin"]</h3>
+
+<div id="users">
+	<div class="spacer"></div>
+	<div class="user"><img class="userPic" src="fallbackUserPhoto.jpg" width=192 height=192><h1 class="userName">user</h1></div>
+</div>
+
+<div id="passwd">
+	<input type="text" id="passwdBox"></input>
+	<div id="loginBtn"><img id="loginImg" src="btnLogin.png" width=20 height=20></div>
+</div>
+
+<script>
+
+users = document.getElementsByClassName("user")
+
+for(i=0;i<users.length;i+=1){
+	users[i].children[1].innerText = window.location.hash.replace("#","")
+}
+
+document.getElementById("passwd").style.opacity = 0
+document.getElementById("passwd").style.width = "1px"
+
+document.addEventListener("click",(e)=>{
+	console.log("h")
+	
+	if(e.srcElement.className == "userPic"){
+		new Audio("sndSelect.mp3").play()
+		e.srcElement.style.marginTop = "-128px"
+		e.srcElement.style.marginLeft = "-32px"
+		e.srcElement.style.width = "256px"
+		e.srcElement.style.height = "256px"
+		document.getElementById("passwd").style.display = "block"
+		document.getElementById("passwd").style.opacity = 1
+		document.getElementById("passwd").style.width = "288px"
+		document.getElementById("passwdBox").focus()
+		console.log("e")
+	} else if(e.srcElement.id != "passwdBox" && e.srcElement.id != "loginImg") {
+		console.log("a")
+		new Audio("sndBlur.mp3").play()
+	
+		for(i=0;i<document.getElementsByClassName("userPic").length;i+=1){
+			document.getElementsByClassName("userPic")[i].style.marginTop = ""
+			document.getElementsByClassName("userPic")[i].style.marginLeft = ""
+			document.getElementsByClassName("userPic")[i].style.width = ""
+			document.getElementsByClassName("userPic")[i].style.height = ""
+			document.getElementById("passwd").style.opacity = 0
+			document.getElementById("passwd").style.width = "1px"
+			
+		}
+	}
+})
+
+document.getElementById("passwdBox").addEventListener("input",(e)=>{
+	
+	if(e.inputType == "deleteContentBackward" || e.inputType == "deleteContentForward"){
+		new Audio("sndBackspace.mp3").play();
+	} else {
+		new Audio("sndKey.mp3").play();
+	}
+	
+	console.log(e)
+	
+})
+
+document.getElementById("loginBtn").addEventListener("click",()=>{
+	inputPasswd = document.getElementById("passwdBox").value
+	
+	if(inputPasswd == "admin"){
+		window.location.href = "sysui.html"
+	} else {
+		document.getElementById("passwdBox").style.background = "#FC9999"
+		new Audio("sndError.mp3").play()
+		setTimeout(()=>{document.getElementById("passwdBox").style.background = ""},200)
+	}
+})
+
+</script>
+</body>
+</html>

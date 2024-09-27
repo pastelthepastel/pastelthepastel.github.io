@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>systerm session</title>
+
+<style>
+* {
+	font-family:monospace;
+	font-size:16px;
+	color:white;
+}
+
+body {background:black;}
+
+#textInput {
+	background:black;
+	color:white;
+	border:none;
+	outline:none;
+	width:calc(100% - 32px);
+}
+
+#textContent {
+	width:100%;
+	overflow-wrap:anywhere;
+}
+</style>
+</head>
+<body>
+
+<div id="textContent"></div>
+<span id="cmdPrefix"></span><input type="text" id="textInput"></input>
+
+<script>
+textInput = document.getElementById("textInput")
+userName = window.location.hash.replace("#","")
+
+document.getElementById("cmdPrefix").innerText = userName+"> "
+
+function writeln(txt,newline=true){
+	if(newline){
+		document.getElementById("textContent").innerHTML = document.getElementById("textContent").innerHTML + txt.replaceAll(" ","&nbsp;") + "<br>"
+	} else {
+		document.getElementById("textContent").innerHTML = document.getElementById("textContent").innerHTML + txt.replaceAll(" ","&nbsp;")
+	}
+}
+
+document.addEventListener("click",()=>{textInput.focus()})
+
+textInput.addEventListener("keydown",(e)=>{
+	if(e.key=="Enter"){
+		cmd = textInput.value
+		writeln(userName+": "+cmd)
+		textInput.value = ""
+		
+		cmdSplit = cmd.split(" ")
+		if(cmdSplit[0]=="help"){
+			writeln("*--------------------------------------------------------------------\\")
+			writeln("* WebPCOS SysTerm Help                                               |")
+			writeln("* Available SysTerm commands:                                        |")
+			writeln("* help  - shows this screen                                          |")
+			writeln("* echo  - prints something on the terminal                           |")
+			writeln("* write - creates a plain text file                                  |")
+			writeln("* open  - open a program                                             |")
+			writeln("* play  - play an internal sound                                     |")
+			writeln("* load  - change this terminal window's source                       |")
+			writeln("* alert - displays a browser alert                                   |")
+			writeln("* kbvw  - a map of all the keyboard hotkeys                          |")
+			writeln("*--------------------------------------------------------------------/")
+			writeln("if you're a newbie, you can click the title of a window while holding CTRL and SHIFT to close it.")
+			writeln("you can press CTRL + \\ to cascade windows. (you have to focus the desktop or the bottom bar first)")
+		}
+		if(cmdSplit[0]=="echo"){
+			writeln(cmdSplit.slice(1).join(" "))
+		}
+		if(cmdSplit[0]=="play"){
+			try {
+				new Audio("../../"+cmdSplit.slice(1).join(" ")).play()
+			} catch (error) {
+				writeln(error.toString())
+			}
+		}
+		if(cmdSplit[0]=="alert"){
+			window.alert(cmdSplit.slice(1).join(" "))
+		}
+		if(cmdSplit[0]=="kbvw"){
+			writeln("-------KEYBOARD SHORTCUTS")
+			writeln("- CTRL + \\ - CASCATE WINDOWS")
+			writeln("- SHIFT + T - OPEN SYSTERM")
+			writeln("- SHIFT + N - CREATE CUSTOM WINDOW")
+		}
+	}
+})
+
+writeln("WebPCOS SysTerm v0.1_b [type \"help\" for help]")
+</script>
+</body>
+</html>

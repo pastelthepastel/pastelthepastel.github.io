@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>boot</title>
+
+<style>
+
+@font-face {
+	src:url("../webpc/vga.ttf");
+	font-family:vga;
+}
+
+body {margin:0;padding:0;background-color:black;}
+
+#bootlogo {
+	position:absolute;
+	left:0;top:0;
+	width:100vw;
+	height:100vh;
+	transition: opacity 2s steps(20);
+	opacity:0;
+}
+
+@keyframes loading {
+	0% {
+		background:linear-gradient(180deg,#fffffff5,#ffffff88 50%,#00000000 50%,#00000044),repeating-linear-gradient(135deg,#8ccc47, #8ccc47 12px, #afff59 12px, #afff59 24px);
+	}
+	
+	50% {
+		background:linear-gradient(180deg,#fffffff5,#ffffff88 50%,#00000000 50%,#00000044),repeating-linear-gradient(135deg,#afff59, #afff59 12px, #8ccc47 12px, #8ccc47 24px);
+	}
+}
+
+#loadingbar {
+	position:fixed;
+	top:0;left:0;
+	width:100%;
+	height:32px;
+	background:linear-gradient(180deg,#fffffff5,#ffffff88 50%,#00000000 50%,#00000044),repeating-linear-gradient(135deg,#8ccc47, #8ccc47 12px, #afff59 12px, #afff59 24px);
+	/*animation-name:loading;*/
+	animation-duration:600ms;
+	animation-iteration-count:infinite;
+	opacity:0;
+	transition: opacity 2s steps(20);
+}
+
+#textModeDisplay {
+	position:absolute;
+	z-index:100;
+	font-family:vga;
+	color:black;
+	transform-origin:top left;
+	width:100%;
+	max-height:100%;
+	overflow:hidden;
+}
+
+#textModeDisplay p {
+	font-size:16px;
+}
+
+#blackout {
+	position:absolute;
+	z-index:1000000;
+	display:none;
+	width:100%;
+	height:100%;
+	background:black;
+}
+
+</style>
+</head>
+<body>
+
+<img src="bootlogo.jpg" id="bootlogo">
+
+<div id="loadingbar"></div>
+
+<div id="textModeDisplay"></div>
+
+<div id="blackout"></div>
+
+<script>
+bootlogo = document.getElementById("bootlogo")
+loadingbar = document.getElementById("loadingbar")
+bootlogo.style.opacity = 0
+loadingbar.style.opacity = 0
+
+textModeDisplay = document.getElementById("textModeDisplay")
+
+setTimeout(()=>{
+	
+	bootlogo.style.opacity = 1
+	loadingbar.style.opacity = 1
+	setTimeout(()=>{
+		loadingbar.style.animationName = "loading"
+	},3000)
+	
+},2820)
+
+namelist = ["dat","mgr","comm","com","con","lpt","drv","man","mon","svc","host","sys","engine","load","snd"]
+
+setTimeout(()=>{
+	setInterval(()=>{
+		linep = document.createElement("p")
+		linep.innerText = namelist[Math.round(Math.random()*namelist.length-1)]+namelist[Math.round(Math.random()*namelist.length-1)]+".sys\n"
+		linep.style.margin = 0
+		textModeDisplay.appendChild(linep)
+		
+		if(textModeDisplay.children.length > window.innerHeight/16){
+			textModeDisplay.children[0].remove()
+		}
+	},22)
+},6000)
+
+setTimeout(()=>{
+	document.getElementById("blackout").style.display = "block"
+},12512)
+
+setTimeout(()=>{window.location.href = "loginScreen.html"+window.location.hash},14256)
+
+</script>
+</body>
+</html>
