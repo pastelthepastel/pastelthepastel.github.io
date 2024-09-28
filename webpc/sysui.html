@@ -209,6 +209,7 @@ addEventListener("contextmenu",(e)=>{e.preventDefault();
 var altHeld = 0
 var ctrlHeld = 0
 var shitHeld = 0
+var resizingWindow = 0
 
 document.addEventListener("keydown",(e)=>{
 	if(e.shiftKey){
@@ -246,11 +247,48 @@ document.addEventListener("keydown",(e)=>{
 	if(e.shiftKey && e.key == "T"){
 		createWindow("SysTerm","apps/systerm/index.html")
 	}
-	if(e.shiftKey && e.ctrlKey && e.key=="Q"){
-		focusedwindow.remove()
+	if(e.shiftKey && e.key=="Q"){
+		closeWindow(focusedwindow)
 	}
 	
+	if(e.shiftKey && e.key == "R"){
+		if(resizingWindow==0){
+			resizingWindow=1
+			//startwidth = parseInt(focusedwindow.style.width)
+			//startheight = parseInt(focusedwindow.style.width)
+			//let startX = mousepos.x
+			let startX = focusedwindow.getBoundingClientRect().x
+			let startY = focusedwindow.getBoundingClientRect().y
+			
+			focusedwindow.style.pointerEvents = "none"
+			
+			function tick(){
+				console.log("startpos: "+startX)
+				//console.log("startwidth:"+startwidth)
+				
+				focusedwindow.style.width  = mousepos.x - startX + "px"
+				focusedwindow.style.height = mousepos.y - startY + "px"
+				
+				if(resizingWindow){
+					setTimeout(tick,1000/60)
+				}
+			};tick()
+		}
+	}
 })
+
+var closeWindowObj = 0
+function closeWindow(windowobj){
+	closeWindowObj = windowobj
+	windowobj.style.transition = "opacity 140ms, height 140ms"
+	setTimeout(()=>{
+		closeWindowObj.marginTop = parseInt(closeWindowObj.height)/2+"px"
+		closeWindowObj.style.height = "0px"
+		closeWindowObj.style.opacity = "0"
+	},20)
+	setTimeout(()=>{closeWindowObj.remove()},160)
+}
+
 document.addEventListener("keyup",(e)=>{
 	if(e.shiftKey){
 		shiftHeld=0
@@ -262,6 +300,13 @@ document.addEventListener("keyup",(e)=>{
 		ctrlHeld=0
 	}
 })
+document.addEventListener("mousedown",()=>{
+	if(resizingWindow){
+		focusedwindow.style.pointerEvents = ""
+		resizingWindow = 0
+	}
+})
+
 
 var mousepos = {"x":0,"y":0}
 document.addEventListener("mousemove",(e)=>{
@@ -274,9 +319,13 @@ var focusedwindow = 0
 function createWindow(winTitle,winSrc){
 	let a = document.getElementsByClassName("templatewindow")[0]
 	let b = a.cloneNode(1)
+	b.style.width = "800px"
+	b.style.height = "600px"
 	b.className = "window"
+	focusedwindow = b
+	b.style.zIndex = "4"
 	b.children[0].children[0].innerText = winTitle	// span inside titlebar
-	b.children[0].children[0].addEventListener("click",(e)=>{if(e.shiftKey && e.ctrlKey){e.srcElement.parentElement.parentElement.remove()}})
+	b.children[0].children[0].addEventListener("click",(e)=>{if(e.shiftKey && e.ctrlKey){closeWindow(e.srcElement.parentElement.parentElement)}})
 	b.children[0].children[1].value = winSrc		// input inside titlebar
 	b.children[1].children[0].src = winSrc			// iframe inside windowContent
 	b.children[0].children[2].onclick = function(e){e.srcElement.parentElement.parentElement.children[1].children[0].src = e.srcElement.parentElement.children[1].value+window.location.hash}
