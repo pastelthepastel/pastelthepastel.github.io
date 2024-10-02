@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WPOSongEditor</title>
+
+<style>
+
+body {margin:0;background-size:100vw 100vh;}
+
+#topbar {
+	background:linear-gradient(90deg,black,transparent);
+	width:calc(100% - 8px);
+	height:42px;
+	padding-top:6px;
+	padding-left:8px;
+	margin-bottom:8px;
+}
+
+#title {
+	color:white;
+	margin:0;
+}
+
+
+#title a {
+	font-size:14px;
+	margin-left:24px;
+	color:white;
+}
+
+#settingsBtn {
+	color:white;
+}
+
+#projSettings{
+	position:fixed;
+	display:none;
+	z-index:100;
+	width:400px;
+	height:260px;
+	background:#E8E8E8;
+	top:calc(50% - 130px);
+	left:calc(50% - 200px);
+	
+	border-radius:16px;
+	box-shadow:#767676 0px 0px 0px 1px, black 0 0 8px, inset white 0px 4px 4px 1px;
+	
+	transition:left 250ms cubic-bezier(0.08, 1.38, 1, 1);;
+}
+
+#settingsTable {
+	width:calc(100% - 8px);
+	margin-top:8px;
+	margin-left:4px;
+	font-family:monospace;
+}
+
+#settingsTable tr {
+	background:white;
+}
+
+#settingsTable tr td, #settingsTable tr th {
+	text-align:center;
+	border-radius:2px;
+}
+
+#settingsTable tr td input {
+	width:calc(100% - 8px);
+	border:black solid 1px;
+}
+
+#settingsTable tr:nth-child(even), #settingsTable tr:nth-child(even) input {
+	background:#F4F4F4;
+}
+
+#settingsTitle {
+	margin:0;
+	margin-top:8px;
+	text-align:center;
+	font-family:monospace;
+	text-shadow:white 0 0 8px, white 0 0 8px, white 0 0 8px;
+}
+
+#settingsButtonRow {
+	position:absolute;
+	bottom:4px;
+	width:calc(100% - 8px);
+	margin-left:16px;
+}
+
+button {
+	border-radius:8px;
+	border:#868686 solid 1px;
+	height:24px;
+	background:linear-gradient(180deg,#DCDCDC 60%,#ffffff);
+	box-shadow:inset white 0px 4px 4px, inset black 0px 0px 2px, #00000099 0 0 4px;
+	transition: box-shadow 128ms;
+}
+button:hover {
+	border-radius:8px;
+	border:#868686 solid 1px;
+	height:24px;
+	background:linear-gradient(180deg,#A9CBFE 60%,#ffffff);
+	box-shadow:inset white 0px 4px 3px, inset black 0px 0px 2px, #0367FCCC 0 0 4px;
+}
+button:active {
+	border-radius:8px;
+	border:#868686 solid 1px;
+	height:24px;
+	background:linear-gradient(180deg,#3585fd,#A9CBFE 40%, #e6f0ff);
+	box-shadow:inset black 0px 1px 4px 1px;
+}
+
+
+#workspace {
+	position:absolute;
+	bottom:8px;
+	width:calc(100% - 16px);
+	margin-left:8px;
+	height:calc(100% - 64px);
+	font-family:monospace;
+	font-size:16px;
+}
+
+#channels {
+	width:100%;
+}
+
+#channelsTable {
+	background:black;
+	width:100%;
+}
+
+#channelsTable tr {
+	background:white;
+}
+
+
+#actionButtons {
+	margin-top:8px;
+}
+
+#actionButtons button {
+	height:20px;
+	border-radius:4px;
+}
+
+#addchannelbtn {
+	margin-top:8px;
+}
+
+#playHead {
+	/* 50 192 70 */
+	height:24px;
+	float:right;
+	margin-right:2px;
+	width:calc(100% - 333px);
+	background:repeating-linear-gradient(135deg,transparent, transparent 2px, gray 2px, gray 4px, transparent 4px, transparent 6px);
+	box-shadow:black 0 0 0 2px;
+}
+
+#playheadplayhead {
+	width:8px;
+	height:49px;
+	background:#FF000055;
+	position:absolute;
+}
+
+#buttonsarea {
+	width:256px;
+	height:24px;
+	float:left;
+}
+
+</style>
+</head>
+<body>
+<div id="topbar"><h1 id="title">Loading...</h1></div>
+<div id="projSettings">
+	<h2 id="settingsTitle">Project Settings</h2>
+	<table id="settingsTable">
+		<tr>
+			<th>option</th>
+			<th>value</th>
+		</tr>
+		<tr>
+			<td>name</td>
+			<td><input type="text" id="songNameSettings"></td>
+		</tr>
+		<tr>
+			<td>tempo</td>
+			<td><input type="text" id="songTempoSettings"></td>
+		</tr>
+		<tr>
+			<td>beats per bar</td>
+			<td><input type="text" id="songBPBSettings"></td>
+		</tr>
+		<tr>
+			<td>creator</td>
+			<td><input type="text" id="songCreatorSettings"></td>
+		</tr>
+		<tr>
+			<td>genre</td>
+			<td><input type="text" id="songGenreSettings"></td>
+		</tr>
+		<tr>
+			<td>background url</td>
+			<td><input type="text" id="backgroundImg"></td>
+		</tr>
+	</table>
+	
+	<div id="settingsButtonRow">
+		<button id="btnSaveSettings" onclick="saveProjectSettings()">Save Settings</button>
+		<button id="btnSaveSettings" onclick="toggleProjectSettings()">Close</button>
+	</div>
+</div>
+
+
+<div id="workspace">
+	<div id="channels">
+	
+		<div id="actionButtons">
+			<div id="buttonsarea">
+				<button onclick="startPlayBack()" title="or hold SHIFT and click me to play from the beginning.">Play</button>
+				<button onclick="stopPlayBack()" title="or hold SHIFT and click me to pause.">Stop</button>
+			
+				<input type="checkbox" id="metronomeBox"><label>metronome</label>
+			</div>
+			
+			<div id="playHead">
+				<div id="playheadplayhead"></div>
+			</div>
+		</div>
+		
+		<table id="channelsTable">
+			<tr>
+				<th style="width:50px;">type</th>
+				<th style="width:192px;">name</th>
+				<th style="width:70px;">vol/pan</th>
+				<th>pattern</th>
+			</tr>
+			
+			
+		</table>
+		<button onclick="btnAddChannel()" id="addchannelbtn">Add Channel</button>
+	</div>
+
+
+</div>
+
+<input type="file" id="hiddeninput" style="display:none;">
+
+<script src="Tone.js"></script>
+<script>
+metronomeSound = new Audio("tick.flac")
+var sampleLoader = document.getElementById("hiddeninput")
+owo = new FileReader()
+
+document.addEventListener("click",()=>{Tone.start()},{once:1})
+
+if(localStorage.getItem("songTitle")===null){
+	localStorage.setItem("songTitle",window.prompt("Please enter the title of your new project."))
+}
+if(localStorage.getItem("songTempo")===null){
+	localStorage.setItem("songTempo",window.prompt("Please enter the tempo of your new project."))
+}
+if(localStorage.getItem("songCreator")===null){
+	localStorage.setItem("songCreator",window.location.hash.replace("#",""))
+}
+if(localStorage.getItem("songBeatsPerBar")===null){
+	localStorage.setItem("songBeatsPerBar",8)
+}
+
+function updateSongTitle(sngtitle){
+	songTitle = localStorage.getItem("songTitle")
+	songTempo = localStorage.getItem("songTempo")
+	document.getElementById("title").innerHTML = songTitle+"<a href=\"javascript:toggleProjectSettings()\" id=\"settingsBtn\">project settings</a> <a href=\"javascript:saveProject()\" id=\"saveproj\">save to Someone's PC</a><a id=\"loadproj\" href=\"javascript:loadProject()\">load from Someone's PC</a>"
+};updateSongTitle()
+
+settingsOpen = 0
+projectSettings = document.getElementById("projSettings")
+projectSettings.style.display = "none"
+projectSettings.style.left = "-420px" // size: 400x260
+
+function toggleProjectSettings(){
+	if(settingsOpen){
+		// Close
+		settingsOpen = 0
+		projectSettings.style.display = "none"
+		projectSettings.style.left = "-420px"
+	} else {
+		// Open
+		settingsOpen = 1
+		document.getElementById("songNameSettings").value = songTitle
+		document.getElementById("songTempoSettings").value = songTempo
+		document.getElementById("songCreatorSettings").value = localStorage.getItem("songCreator")
+		document.getElementById("songGenreSettings").value = localStorage.getItem("songGenre")
+		document.getElementById("backgroundImg").value = localStorage.getItem("bgImg")
+		document.getElementById("songBPBSettings").value = localStorage.getItem("songBeatsPerBar")
+		projectSettings.style.display="block"
+		setTimeout(()=>{projectSettings.style.left = ""},40)
+		projectSettings.style.display="block"
+	}
+}
+
+function saveProjectSettings(){
+	localStorage.setItem("songTitle",document.getElementById("songNameSettings").value)
+	localStorage.setItem("songTempo",document.getElementById("songTempoSettings").value)
+	localStorage.setItem("songCreator",document.getElementById("songCreatorSettings").value)
+	localStorage.setItem("songGenre",document.getElementById("songGenreSettings").value)
+	localStorage.setItem("bgImg",document.getElementById("backgroundImg").value)
+	localStorage.setItem("songBeatsPerBar",document.getElementById("songBPBSettings").value)
+	
+	document.body.style.backgroundImage = "url(\""+localStorage.getItem("bgImg")+"\")"
+	updateSongTitle()
+	toggleProjectSettings()
+}
+
+
+var channelsList = []
+
+function updateChannelTable(){
+	channels = document.getElementsByClassName("channel")
+	channelCount = document.getElementsByClassName("channel").length
+	channelsTable = document.getElementById("channelsTable")
+	
+	for(i=0;i<channelCount;i+=1){
+		document.getElementsByClassName("channel")[0].remove()
+	}
+	
+	for(i=0;i<channelsList.length;i+=1){
+		currentChannel = document.createElement("tr")
+		
+		addColumn = document.createElement("td")
+		addColumn.innerText = channelsList[i].channelType
+		currentChannel.appendChild(addColumn)
+		addColumn = document.createElement("td")
+		addColumn.innerText = channelsList[i].channelName
+		currentChannel.appendChild(addColumn)
+		addColumn = document.createElement("td")
+		addColumn.innerText = "100 100"
+		currentChannel.appendChild(addColumn)
+		addColumn = document.createElement("td")
+		tdPatternInput = document.createElement("input")
+		tdPatternInput.type = "text"
+		tdPatternInput.style.width = "calc(100% - 8px)"
+		tdPatternInput.style.fontFamily = "monospace"
+		tdPatternInput.style.fontSize = "15px"
+		addColumn.appendChild(tdPatternInput)
+		currentChannel.appendChild(addColumn)
+		
+		currentChannel.className = "channel"
+		
+		channelsTable.appendChild(currentChannel)
+	}
+	
+	document.getElementById("playheadplayhead").style.height = 49+27*channelsList.length+"px"
+}
+
+function btnAddChannel(){
+	if(window.prompt("Type of channel [1 = Synth, 2 = Sampler]:")=="1"){
+		// synth 
+		addToneSynth(window.prompt("Name of the new synth:"))
+	} else {
+		// sampler
+		addSampler(window.prompt("Name of the new sampler:"))
+	}
+}
+
+var samplah = 0
+function addSampler(nameofthesampler){
+	samplah = new Audio()
+	samplah.channelName = nameofthesampler
+	samplah.channelType = "SAMPL"
+	
+	owo.addEventListener("load",()=>{
+		// done loading the sample
+		samplah.src = owo.result
+		
+		channelsList = channelsList.concat(samplah)
+		updateChannelTable()
+	})
+	
+	sampleLoader.addEventListener("input",(e)=>{
+		owo.readAsDataURL(e.srcElement.files[0])
+	})
+	sampleLoader.click()
+	
+	
+}
+
+function addToneSynth(nameofthesynth){
+	synth = new Tone.Synth().toDestination()
+	synth.channelName = nameofthesynth
+	synth.channelType = "TONE"
+	channelsList = channelsList.concat(synth)
+	updateChannelTable()
+}
+
+addToneSynth("Tone.js Synth")
+
+
+var isPlaying = 0
+var playHeadPos = 0
+var playHeadNotePos = 0
+
+var octave = 4
+
+function playStep(notepos){
+	channels = document.getElementsByClassName("channel")
+
+	for(i=0;i<channels.length;i+=1){
+		note = channels[i].children[3].children[0].value[notepos]
+		// channelsList[i].triggerRelease()
+		
+		if(channelsList[i].channelType == "TONE"){
+			switch(note){
+				case "q":
+					channelsList[i].triggerAttack("C"+octave)
+					break
+				case "w":
+					channelsList[i].triggerAttack("C#"+octave)
+					break
+				case "e":
+					channelsList[i].triggerAttack("D"+octave)
+					break
+				case "r":
+					channelsList[i].triggerAttack("D#"+octave)
+					break
+				case "t":
+					channelsList[i].triggerAttack("E"+octave)
+					break
+				case "y":
+					channelsList[i].triggerAttack("F"+octave)
+					break
+				case "u":
+					channelsList[i].triggerAttack("F#"+octave)
+					break
+				case "i":
+					channelsList[i].triggerAttack("G"+octave)
+					break
+				case "o":
+					channelsList[i].triggerAttack("G#"+octave)
+					break
+				case "p":
+					channelsList[i].triggerAttack("A"+octave)
+					break
+				case "a":
+					channelsList[i].triggerAttack("A#"+octave)
+					break
+				case "s":
+					channelsList[i].triggerAttack("B"+octave)
+					break
+				case "0":
+					octave = 0
+					break
+				case "1":
+					octave = 1
+					break
+				case "2":
+					octave = 2
+					break
+				case "3":
+					octave = 3
+					break
+				case "4":
+					octave = 4
+					break
+				case "5":
+					octave = 5
+					break
+				case "6":
+					octave = 6
+					break
+				case "7":
+					octave = 7
+					break
+				case "8":
+					octave = 8
+					break
+				case "=":
+					channelsList[i].triggerRelease()
+					break
+			}
+		} else {
+			// what will i do if its a sampler?
+			
+			if(note=="="){
+				channelsList[i].pause()
+				channelsList[i].currentTime = 0
+			}else if(note != " " && note != "" && note != null){
+				channelsList[i].currentTime = 0
+				channelsList[i].play()
+			}
+		}
+	}
+}
+
+songBPB = localStorage.getItem("songBeatsPerBar")
+
+function startPlayBack(){
+	songTempo = localStorage.getItem("songTempo")
+	songBPB = localStorage.getItem("songBeatsPerBar")
+	
+	if(isPlaying==0){
+		isPlaying = 1
+		
+		function tick(){
+			document.getElementById("playheadplayhead").style.marginLeft = playHeadPos+"px"
+			if(document.getElementById("metronomeBox").checked){metronomeSound.play()}
+			
+			playStep(playHeadNotePos)
+			
+			if(isPlaying){
+				playHeadPos += 8.25
+				playHeadNotePos += 1
+				setTimeout(tick,(songTempo/60/songBPB)*1000)
+			}
+		};tick()
+	} else {
+		isPlaying=0
+		playHeadNotePos = 0
+		setTimeout(()=>{
+			playHeadPos=0
+			document.getElementById("playheadplayhead").style.marginLeft = playHeadPos+"px"
+			startPlayBack()
+		},(songTempo/60/songBPB)*1000)
+	}
+}
+
+function stopPlayBack(){
+	playHeadPos = 0
+	playHeadNotePos = 0
+	isPlaying = 0
+	document.getElementById("playheadplayhead").style.marginLeft = playHeadPos+"px"
+	
+	setTimeout(()=>{
+		for(i=0;i<channelsList.length;i+=1){
+			if(channelsList[i].channelType=="TONE"){channelsList[i].triggerRelease()}
+		}
+	},(songTempo/60/songBPB)*1000)
+}
+
+
+var uwu = 0
+document.getElementById("hiddeninput").addEventListener("input",(e)=>{uwu = e})
+
+</script>
+</body>
+</html>
