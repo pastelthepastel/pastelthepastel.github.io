@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Soundmap</title>
+    <style>
+        * {
+            font-family: monospace;
+            margin:0;
+            box-sizing: border-box;
+        }
+
+        h1,h2 {font-weight:normal;margin:0 0 16px 0;}
+
+        .rack {
+            border:black solid 1px;
+            padding:8px 10px;
+            background:#E6E6E6;
+            width:calc(100% - 16px);
+            margin:8px;
+        }
+
+        .soundmap {
+            width: 600px;
+            height:266px;
+            background:#F0F0F0;
+            padding:8px;
+            border:black solid 1px;
+            margin-bottom:16px;
+        }
+        .soundmap .controls {
+            float:left;
+            margin-left:16px;
+            padding-left:16px;
+            border-left:#00000090 dashed 1px;
+            height:100%;
+        }
+        .soundmap .controls .levelSlider, .soundmap .controls button {
+            display:block;
+            margin-bottom:8px;
+        }
+        .soundmap .controls h2 {
+            width:fit-content;
+        }
+        .soundmap .player {
+            float:left;
+            box-shadow:black 0 0 0 1px,white 0 0 0 2px,black 0 0 6px;
+            width:250px;
+            height:250px;
+            image-rendering: pixelated;
+            background:#FFFFFF90;
+        }
+
+        #buttons {
+            border:black solid 1px;
+            background:#E6E6E6;
+            width:calc(100% - 16px);
+            margin:8px;
+            padding:4px;
+            height:34px;
+        }
+
+        #buttons * {
+            height: 24px;
+            vertical-align: top;
+            font-size:16px;
+        }
+        input[type=range] {
+            margin:0;
+        }
+        #buttons span {vertical-align: middle;}
+    </style>
+</head>
+<body>
+    <div id="buttons">
+        <button id="playbtn">Play</button>
+        <input type="range" name="" id="globalvolume">
+
+        <div style="float:right;">
+            <span>BPM: </span>
+            <input type="number" name="" id="tempofield" value="150" style="width:60px;">
+        </div>
+    </div>
+
+    <div class="rack">
+        <h1>Default SoundMap Rack</h1>
+
+        <!-- div class="soundmap">
+            <canvas class="player"></canvas>
+            <canvas class="display"></canvas>
+        </div -->
+    </div>
+
+    <!--canvas class="player" width="16" height="16">
+        <div class="playerSquare"></div>
+    </canvas -->
+
+    <script>
+
+        let playing = 0;
+        document.getElementById("playbtn").addEventListener("click",(e)=>{
+            if(playing==0){
+                playing=1;
+                e.srcElement.innerText = "Stop";
+            } else {
+                playing=0;
+                e.srcElement.innerText = "Play";
+            };
+        });
+
+        const colors = {
+            red:[255,0,0,255],
+            green:[0,255,0,255],
+            blue:[0,0,255,255],
+            yellow:[255,255,0,255],
+            cyan:[0,255,255,255],
+            magenta:[255,0,255,255],
+            white:[255,255,255,255],
+            black:[0,0,0,255],
+            transparent:[0,0,0,0]
+        };
+
+        let defaultrack = document.getElementsByClassName("rack")[0];
+
+        class soundmap {
+            constructor(width=32,height=32,level=1,name="soundmap",data=undefined,racknode=defaultrack){
+                // attributes
+                this.width = width;
+                this.height = height;
+                this.level = level;
+                this.racknode = racknode;
+                this.name = name;
+                this.data = data; // most important part probably
+
+                // build elements
+                let soundmapNode = document.createElement("div");
+                soundmapNode.className = "soundmap";
+                let playerNode = document.createElement("canvas");
+                playerNode.className = "player";
+                playerNode.width = width;
+                playerNode.height = height;
+
+                let controlsNode = document.createElement("div");
+                controlsNode.className = "controls";
+
+                this.titleNode = document.createElement("h2");
+                this.titleNode.innerText = name;
+                controlsNode.appendChild(this.titleNode);
+
+                let levelNode = document.createElement("input");
+                levelNode.type = "range";
+                levelNode.className = "levelSlider";
+                controlsNode.appendChild(levelNode);
+
+                let envNode = document.createElement("button");
+                envNode.innerText = "Create Envelope";
+                controlsNode.appendChild(envNode);
+
+                let renNode = document.createElement("button");
+                renNode.innerText = "Rename";
+                renNode.onclick = this.rename;
+                controlsNode.appendChild(renNode);
+
+                let delNode = document.createElement("button");
+                delNode.innerText = "Delete";
+                controlsNode.appendChild(delNode);
+
+                racknode.appendChild(soundmapNode);
+                soundmapNode.appendChild(playerNode);
+                soundmapNode.appendChild(controlsNode);
+                // god i hate this
+
+
+                
+
+
+            };
+
+            rename(){
+                this.parentElement.children[0].innerText = prompt("New name:");
+            }
+        };
+
+
+        let soundmap1 = new soundmap(32,32,1,"soundmap",undefined,defaultrack)
+
+
+        
+
+        /*let canvas = document.getElementsByClassName("player")[0];
+        let ctx = canvas.getContext("2d");
+        
+        let mousePos = {x:0,y:0,left:0,middle:0,right:0};
+        canvas.addEventListener("mousemove",(e)=>{
+            mousePos.x = Math.floor((e.offsetX/250)*canvas.width);
+            mousePos.y = Math.floor((e.offsetY/250)*canvas.height);
+
+            if(mousePos.left){
+                setPixel(mousePos.x,mousePos.y,colors.magenta);
+            }else if(mousePos.right){
+                setPixel(mousePos.x,mousePos.y,colors.transparent);
+            }
+        });
+        canvas.addEventListener("mousedown",(e)=>{ // 0 = left; 1 = middle; 2 = right;
+            if(e.button==0){
+                mousePos.left = 1;
+            };
+            if(e.button==1){
+                mousePos.middle = 1;
+            };
+            if(e.button==2){
+                mousePos.right = 1;
+            };
+        });
+        canvas.oncontextmenu = (e)=>{e.preventDefault()};
+        canvas.addEventListener("mouseup",(e)=>{
+            if(e.button==0){
+                mousePos.left = 0;
+                setPixel(mousePos.x,mousePos.y,colors.magenta);
+            };
+            if(e.button==1){
+                mousePos.middle = 0;
+            };
+            if(e.button==2){
+                mousePos.right = 0;
+                setPixel(mousePos.x,mousePos.y,colors.transparent);
+            };
+        });
+
+        const emptyData = ctx.createImageData(canvas.width,canvas.height);
+        let data = emptyData;
+
+        function getPixel(x,y){
+            let pixel = ((y*canvas.width)+x)*4;
+            let pixelData = {r:data.data[pixel],g:data.data[pixel+1],b:data.data[pixel+2],a:data.data[pixel+3]};
+            return pixelData;
+        };
+
+        function setPixel(x,y,c=[0,0,0,255]){
+            if(c[3]==undefined){c[3]=255}
+
+            let pixelIndex = ((y*canvas.width)+x)*4;
+            data.data[pixelIndex] = c[0];
+            data.data[pixelIndex+1] = c[1];
+            data.data[pixelIndex+2] = c[2];
+            data.data[pixelIndex+3] = c[3];
+        };
+
+        function rect(x1,y1,w,h,c=[0,0,0,255]){
+            for(let y=y1;y<(h+y1);y++){
+                for(let x=x1;x<(w+x1);x++){
+                    setPixel(x,y,c);
+                };
+            };
+        };
+
+        function gradientRect(x1,y1,w,h,color1,color2,mode=0){
+            let c = color1;
+
+            let addR = (color2[0]-color1[0])/w;
+            let addG = (color2[1]-color1[1])/w;
+            let addB = (color2[2]-color1[2])/w;
+
+            if(mode==0){
+                for(let y=y1;y<(h+y1);y++){
+                    for(let x=x1;x<(w+x1);x++){    
+                        setPixel(x,y,c);
+                    };
+                    c[0]+=addR;
+                    c[1]+=addG;
+                    c[2]+=addB;
+                };
+            }else if(mode==1){
+                for(let x=x1;x<(w+x1);x++){
+                    for(let y=y1;y<(h+y1);y++){    
+                        setPixel(x,y,c);
+                    };
+                    c[0]+=addR;
+                    c[1]+=addG;
+                    c[2]+=addB;
+                };
+            }
+            
+        };
+
+        function refresh(){
+            
+
+            
+
+        };
+
+        setInterval(()=>{
+            ctx.putImageData(data,0,0);
+
+            refresh();
+
+        },1000/30);
+
+
+
+        //''''''''''''''|
+        //  AUDIO STUFF |
+        //,,,,,,,,,,,,,,l
+
+        function uint8tofloat32audio(arrayIn){
+            let uint8array = new Uint8Array(arrayIn.length);
+            for(let i=0;i<arrayIn.length;i++){
+                uint8array[i] = ((arrayIn[i]/255)*2)-1;
+            };
+            return new Float32Array(uint8array);
+        };
+
+        const canvasSize = canvas.width*canvas.height*4;
+        const rate = 24000;
+        const buflength = canvasSize/rate; // in seconds
+
+        let audiocontext = new AudioContext();
+
+        let buffer;
+
+        function play(){
+            buffer = audiocontext.createBuffer(1,buflength*rate,rate);
+            buffer.copyToChannel(uint8tofloat32audio(data.data),0);
+            src = audiocontext.createBufferSource();
+            src.buffer = buffer;
+            src.connect(audiocontext.destination);
+            src.start();
+
+
+
+        }
+
+        setInterval(play,1000*buflength);*/
+
+    </script>
+</body>
+</html>
